@@ -29,6 +29,11 @@ dependencies {
     compile "com.android.support:support-v13:${projectBuildToolVersion}"
     compile "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}"
 
+    // HTML Parser
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.8.3'
+    // Date
+    compile 'joda-time:joda-time:2.9.9'
+
     testCompile "junit:junit:${junitVersion}"
 
 }
