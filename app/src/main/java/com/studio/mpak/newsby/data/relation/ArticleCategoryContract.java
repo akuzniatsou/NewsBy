@@ -17,7 +17,7 @@ public class ArticleCategoryContract {
                     + ArticleCategoryContract.ArticleCategoryEntry.COLUMN_ARTICLE_ID + " INTEGER NOT NULL, "
                     + ArticleCategoryContract.ArticleCategoryEntry.COLUMN_CATEGORY_ID + " INTEGER NOT NULL, "
                     + "PRIMARY KEY (" + ArticleCategoryContract.ArticleCategoryEntry.COLUMN_ARTICLE_ID + ", "
-                    + ArticleCategoryContract.ArticleCategoryEntry.COLUMN_CATEGORY_ID + ")"
+                    + ArticleCategoryContract.ArticleCategoryEntry.COLUMN_CATEGORY_ID + ") ON CONFLICT IGNORE"
                     + ");";
 
     public static abstract class ArticleCategoryEntry implements BaseColumns {

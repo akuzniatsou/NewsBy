@@ -45,5 +45,6 @@ public class ArticleContract {
         public final static String COLUMN_COMMENT_COUNT = "comment_count";
         public final static String COLUMN_CREATED_DATE = "created_date";
 
+
     }
 }
