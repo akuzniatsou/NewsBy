@@ -1,3 +1,63 @@
 <resources>
-    <string name="app_name">NewsBy</string>
+    <string name="app_name">News.by</string>
+
+    <string name="no_earthquakes">Новостей не найдено</string>
+    <string name="no_internet_connection">Нет подключения к интернету</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+    <string name="share_news">Поделиться новостью</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
+    <string name="settings_content_actual">Актуально</string>
+    <string name="settings_content_main">Главное</string>
+    <string name="settings_content_society">Общество</string>
+    <string name="settings_content_culture">Культура</string>
+    <string name="settings_content_official">Официально</string>
+    <string name="settings_content_event">События</string>
+    <string name="settings_content_economic">Экономика</string>
+    <string name="settings_content_heals">Здоровье</string>
+    <string name="settings_content_sport">Спорт</string>
+    <string name="settings_content_citizen">Оршанцы</string>
+    <string name="settings_content_photo">Фоторепортажи</string>
+    <string name="settings_content_partnership">Партнерский материал</string>
+    <string name="settings_content_group">Профсоюзы</string>
+    <string name="settings_content_anniversary">Юбилей города</string>
+
+
+
+
+
+
+
+
+
+
+
+    <string name="settings_menu_item">Settings</string>
+    <string name="settings_title">Настройки</string>
+
+    <string name="settings_min_magnitude_label">Minimum Magnitude</string>
+    <string name="settings_min_magnitude_key" translatable="false">min_magnitude</string>
+    <string name="settings_min_magnitude_default" translatable="false">6</string>
+
+    <string name="settings_order_by_label">Order By</string>
+    <string name="settings_order_by_key" translatable="false">order_by</string>
+    <string name="settings_order_by_default" translatable="false">@string/settings_order_by_magnitude_value</string>
+
+    <string name="settings_order_by_magnitude_label">Magnitude</string>
+    <string name="settings_order_by_magnitude_value" translatable="false">magnitude</string>
+
+    <string name="settings_order_by_most_recent_label">Most Recent</string>
+    <string name="settings_order_by_most_recent_value" translatable="false">time</string>
+    <string name="announcement_title">Афиша</string>
+    <string name="test_text">Госконтроль выявил нарушения порядка представления данных государственной статистической отчетности</string>
+    <string name="test_salary">9999,99</string>
+    <string name="vacancy_title">Вакансии</string>
+
 </resources>

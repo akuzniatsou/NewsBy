@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/soc_share_panel"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:visibility="invisible">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/share_news"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+
+        <ImageButton
+            android:layout_width="@dimen/social_button_size"
+            android:layout_height="@dimen/social_button_size"
+            android:src="@drawable/vk"
+            android:scaleType="fitCenter"
+            android:layout_margin="8dp"
+            android:background="@android:color/transparent"
+            android:adjustViewBounds="true"
+            android:onClick="vkShareAction"/>
+
+        <ImageButton
+            android:layout_width="@dimen/social_button_size"
+            android:layout_height="@dimen/social_button_size"
+            android:src="@drawable/ok"
+            android:scaleType="fitCenter"
+            android:layout_margin="8dp"
+            android:background="@android:color/transparent"
+            android:adjustViewBounds="true"
+            android:onClick="okShareAction"/>
+
+        <ImageButton
+            android:layout_width="@dimen/social_button_size"
+            android:layout_height="@dimen/social_button_size"
+            android:src="@drawable/fb"
+            android:scaleType="fitCenter"
+            android:layout_margin="8dp"
+            android:background="@android:color/transparent"
+            android:adjustViewBounds="true"
+            android:onClick="fbShareAction"/>
+
+        <ImageButton
+            android:layout_width="@dimen/social_button_size"
+            android:layout_height="@dimen/social_button_size"
+            android:src="@drawable/twitter"
+            android:scaleType="fitCenter"
+            android:layout_margin="8dp"
+            android:background="@android:color/transparent"
+            android:adjustViewBounds="true"
+            android:onClick="tweetShareAction"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+</LinearLayout>

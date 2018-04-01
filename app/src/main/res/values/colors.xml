@@ -3,4 +3,19 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="colorBlack">#000000</color>
+
+    <color name="subHeader">#000000</color>
+    <color name="subElement">#555555</color>
+
+    <color name="colorSociety">#55ac55</color>
+    <color name="colorActual">#dd3535</color>
+    <color name="colorCulture">#9d58e2</color>
+    <color name="colorPhoto">#ff8c00</color>
+    <color name="colorOfficial">#555ed6</color>
+    <color name="colorEconomic">#0595bc</color>
+    <color name="colorSport">#2b2b2b</color>
+    <color name="colorCategory">#ffffff</color>
+    <color name="colorYouth">#b2ad25</color>
 </resources>
