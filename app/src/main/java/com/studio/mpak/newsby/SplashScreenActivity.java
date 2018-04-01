@@ -1,10 +1,15 @@
 package com.studio.mpak.newsby;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.studio.mpak.newsby.domain.Article;
 import com.studio.mpak.newsby.loader.ContentLoader;
@@ -26,21 +31,30 @@ public class SplashScreenActivity extends AppCompatActivity implements LoaderMan
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-
+        setContentView(R.layout.splash_screen);
 
         repository = new ArticleRepository(this);
         repository.open();
 
-        lastUpdateDate = new DateTime();
-        Article lastArticle = repository.last();
-        if (null != lastArticle) {
-            String date = lastArticle.getDate();
-            lastUpdateDate = DateTime.parse(date, DateTimeFormat.forPattern("dd.MM.yyyy"));
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+
+
+            lastUpdateDate = new DateTime();
+            Article lastArticle = repository.last();
+            if (null != lastArticle) {
+                String date = lastArticle.getDate();
+                lastUpdateDate = DateTime.parse(date, DateTimeFormat.forPattern("dd.MM.yyyy"));
+            }
+            LoaderManager loaderManager = getSupportLoaderManager();
+            loaderManager.initLoader(0, null, this);
+        } else {
+            Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+            startActivity(intent);
         }
-        LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.initLoader(0, null, this);
+
+
     }
 
     @Override
@@ -51,9 +65,9 @@ public class SplashScreenActivity extends AppCompatActivity implements LoaderMan
     @Override
     public void onLoadFinished(Loader<ArrayList<Article>> loader, ArrayList<Article> data) {
         storeToDB(data);
-        TextView tvHello = findViewById(R.id.tvHello);
-        tvHello.setText("Finished");
-
+        Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+        startActivity(intent);
+        repository.close();
     }
 
     private void storeToDB(ArrayList<Article> articles) {
