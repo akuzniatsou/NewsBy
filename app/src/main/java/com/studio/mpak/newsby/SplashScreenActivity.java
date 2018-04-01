@@ -1,20 +1,15 @@
 package com.studio.mpak.newsby;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import com.studio.mpak.newsby.domain.Article;
 import com.studio.mpak.newsby.loader.ContentLoader;
 import com.studio.mpak.newsby.parser.ArticleListParser;
 import com.studio.mpak.newsby.repository.ArticleRepository;
+import com.studio.mpak.newsby.util.AppUtil;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
@@ -36,11 +31,7 @@ public class SplashScreenActivity extends AppCompatActivity implements LoaderMan
         repository = new ArticleRepository(this);
         repository.open();
 
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-
-
+        if (AppUtil.isConnected(this)) {
             lastUpdateDate = new DateTime();
             Article lastArticle = repository.last();
             if (null != lastArticle) {

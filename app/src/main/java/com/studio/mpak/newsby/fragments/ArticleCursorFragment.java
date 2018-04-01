@@ -1,5 +1,6 @@
 package com.studio.mpak.newsby.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import com.studio.mpak.newsby.R;
 import com.studio.mpak.newsby.WebViewActivity;
 import com.studio.mpak.newsby.adapter.ArticleCursorAdapter;
@@ -24,6 +27,7 @@ import com.studio.mpak.newsby.domain.Article;
 import com.studio.mpak.newsby.loader.ArticleCursorLoader;
 import com.studio.mpak.newsby.loader.UpdateContentTask;
 import com.studio.mpak.newsby.repository.ArticleRepository;
+import com.studio.mpak.newsby.util.AppUtil;
 
 import java.util.List;
 
@@ -32,14 +36,20 @@ import java.util.List;
  */
 public class ArticleCursorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-    private static final String ARTICLE_URL = "http://www.orshanka.by/?cat=%d";
-    private static final String ARTICLE_URL_PAGED = ARTICLE_URL + "&paged=%d";
-    public static final int LOADER_ID = 0;
+    private static final int ARTICLE_CURSOR_LOADER_ID = 0;
+
     private ArticleCursorAdapter mCursorAdapter;
     private AsyncTask<Integer, Void, List<Article>> asyncTask;
     private int categoryId;
-    private String url;
-    ProgressBar bar;
+    private ProgressBar bar;
+    private Toast mToast;
+    private Context context;
+
+    @Override
+    public void onAttach(Context context) {
+        this.context = context;
+        super.onAttach(context);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,19 +72,21 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
-                String url = cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_URL));
-                Uri webPage = Uri.parse(url);
-                Intent intent = new Intent(getActivity().getApplicationContext(), WebViewActivity.class);
-                intent.putExtra(ArticleEntry.COLUMN_URL, webPage.toString());
-                startActivity(intent);
-                mCursorAdapter.notifyDataSetChanged();
+                if (AppUtil.isConnected(context)) {
+                    Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+                    String url = cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_URL));
+                    Uri webPage = Uri.parse(url);
+                    Intent intent = new Intent(context, WebViewActivity.class);
+                    intent.putExtra(ArticleEntry.COLUMN_URL, webPage.toString());
+                    startActivity(intent);
+                    mCursorAdapter.notifyDataSetChanged();
+                } else {
+                    showAToast("No connection");
+                }
             }
         });
 
-        categoryId = getArguments().getInt("category");
-        url = String.format(ARTICLE_URL, categoryId);
-
+        categoryId = getArguments() != null ? getArguments().getInt("category") : -1;
         return rootView;
     }
 
@@ -82,44 +94,19 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         bar.setVisibility(View.VISIBLE);
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(ARTICLE_CURSOR_LOADER_ID, null, this);
     }
 
-    public void loadNextDataFromApi(int offset, final int totalItemsCount) {
+    void loadNextDataFromApi(int offset, final int totalItemsCount) {
         bar.setVisibility(View.VISIBLE);
-
-        asyncTask = new AsyncTask<Integer, Void, List<Article>>() {
-            @Override
-            protected List<Article> doInBackground(Integer... categories) {
-                return new UpdateContentTask().doInBackground(categories[0], totalItemsCount);
-            }
-
-            @Override
-            protected void onPostExecute(List<Article> articles) {
-                if (articles == null) {
-                    return;
-                }
-                ArticleRepository articleRepository = new ArticleRepository(getActivity().getApplicationContext());
-                articleRepository.open();
-                for (Article article : articles) {
-                    articleRepository.insert(article);
-                }
-                articleRepository.close();
-                getLoaderManager().restartLoader(0, null, ArticleCursorFragment.this);
-                mCursorAdapter.notifyDataSetChanged();
-
-            }
-
-        };
+        asyncTask = new UpdateContentAsyncTask(totalItemsCount, mCursorAdapter, getLoaderManager(),
+                ArticleCursorFragment.this, getActivity());
         asyncTask.execute(categoryId);
-
-
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new ArticleCursorLoader(categoryId, getActivity().getApplicationContext());
-
+        return new ArticleCursorLoader(categoryId, context);
     }
 
     @Override
@@ -136,10 +123,60 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
         }
     }
 
-
-
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    private static class UpdateContentAsyncTask extends AsyncTask<Integer, Void, List<Article>> {
+        private final int totalItemsCount;
+        private ArticleCursorAdapter mCursorAdapter;
+        private LoaderManager loaderManager;
+        private ArticleCursorFragment fragment;
+        private final ThreadLocal<FragmentActivity> activity = new ThreadLocal<>();
+
+        UpdateContentAsyncTask(int totalItemsCount, ArticleCursorAdapter mCursorAdapter,
+                               LoaderManager loaderManager, ArticleCursorFragment fragment,
+                               FragmentActivity activity) {
+            this.totalItemsCount = totalItemsCount;
+            this.mCursorAdapter = mCursorAdapter;
+            this.loaderManager = loaderManager;
+            this.fragment = fragment;
+            this.activity.set(activity);
+        }
+
+        @Override
+        protected List<Article> doInBackground(Integer... categories) {
+            return new UpdateContentTask().doInBackground(categories[0], totalItemsCount);
+        }
+
+        @Override
+        protected void onPostExecute(List<Article> articles) {
+            if (articles == null) {
+                return;
+            }
+            ArticleRepository articleRepository = new ArticleRepository(activity.get().getApplicationContext());
+            articleRepository.open();
+            for (Article article : articles) {
+                articleRepository.insert(article);
+            }
+            articleRepository.close();
+            loaderManager.restartLoader(ARTICLE_CURSOR_LOADER_ID, null, fragment);
+            mCursorAdapter.notifyDataSetChanged();
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+    }
+
+    public void showAToast(String message){
+        if (mToast != null) {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT);
+        mToast.show();
     }
 }

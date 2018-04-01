@@ -4,12 +4,13 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
 import com.studio.mpak.newsby.domain.Article;
+import com.studio.mpak.newsby.domain.Response;
 import com.studio.mpak.newsby.parser.DocumentParser;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import com.studio.mpak.newsby.util.AppUtil;
 
-import java.io.IOException;
-
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class ArticleLoader extends AsyncTaskLoader<Article> {
 
     private static final String LOG_TAG = ArticleLoader.class.getSimpleName();
@@ -24,13 +25,14 @@ public class ArticleLoader extends AsyncTaskLoader<Article> {
 
     @Override
     public Article loadInBackground() {
-        Document document = null;
-        try {
-            document = Jsoup.connect(url).timeout(10000).get();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error with creating URL", e);
+        Article article = null;
+        Response response = AppUtil.get(url);
+        if (response.getStatus().isError()) {
+            Log.e(LOG_TAG, "Error while loading article, " + response.getStatus().getReasonPhrase());
+        } else {
+            article = parser.parse(response.getData());
         }
-        return parser.parse(document);
+        return article;
     }
 
     @Override

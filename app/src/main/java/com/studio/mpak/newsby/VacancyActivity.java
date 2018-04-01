@@ -19,6 +19,9 @@ import com.studio.mpak.newsby.parser.VacancyParser;
 
 import java.util.ArrayList;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class VacancyActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ArrayList<Announcement<Vacancy>>>,
         SearchView.OnQueryTextListener, SearchView.OnCloseListener{

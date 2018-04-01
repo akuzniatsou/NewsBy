@@ -3,7 +3,11 @@ package com.studio.mpak.newsby.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class Announcement<T> {
+
     private int id;
     private List<T> events = new ArrayList<>();
     private String place;

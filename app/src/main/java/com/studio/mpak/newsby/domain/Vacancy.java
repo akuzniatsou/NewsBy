@@ -1,5 +1,8 @@
 package com.studio.mpak.newsby.domain;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class Vacancy {
 
     String position;

@@ -4,7 +4,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import com.studio.mpak.newsby.data.category.CategoryEnum;
 import com.studio.mpak.newsby.domain.Article;
-import com.studio.mpak.newsby.domain.Category;
 import com.studio.mpak.newsby.validator.ShortArticleValidator;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

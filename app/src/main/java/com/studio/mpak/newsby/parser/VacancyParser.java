@@ -11,6 +11,9 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class VacancyParser implements DocumentParser<ArrayList<Announcement<Vacancy>>> {
 
     @Override
@@ -61,15 +64,11 @@ public class VacancyParser implements DocumentParser<ArrayList<Announcement<Vaca
                         }
                     }
                 }
-
             }
         }
         if (announcement != null) {
             announcements.add(announcement);
         }
-
-
-
         return announcements;
     }
 }

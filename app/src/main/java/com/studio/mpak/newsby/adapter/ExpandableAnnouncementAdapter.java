@@ -13,6 +13,9 @@ import com.studio.mpak.newsby.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class ExpandableAnnouncementAdapter extends BaseExpandableListAdapter {
 
     private ArrayList<Announcement<String>> announcements;
@@ -70,8 +73,7 @@ public class ExpandableAnnouncementAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
-                             ViewGroup parent) {
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

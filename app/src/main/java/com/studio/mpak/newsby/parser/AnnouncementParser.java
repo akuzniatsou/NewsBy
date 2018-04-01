@@ -10,32 +10,11 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class AnnouncementParser implements DocumentParser<ArrayList<Announcement<String>>> {
 
-    private static final List<String> VENUES = new ArrayList<String>() {{
-        add("Площадь Коллегиума иезуитов");
-//        add("Музейный комплекс истории и культуры Оршанщины");
-        add("Музей истории и культуры города Орши");
-        add("Оршанский этнографический музей «Мельница»");
-        add("Оршанская городская художественная галерея В.А.Громыко");
-        add("Оршанский музей В.С.Короткевича");
-        add("Оршанский музей деревянной скульптуры резчика С.С. Шаврова");
-        add("Художественная галерея «Каляровы шлях»");
-        add("Оршанская централизованная библиотечная система");
-        add("Оршанский городской Центр культуры «Победа»");
-        add("Городской Дворец культуры «Орша»");
-        add("Дворец культуры г.Барани Оршанского района");
-        add("Оршанский районный Дом культуры");
-        add("Дом культуры г.п. Болбасово");
-        add("Городской детский парк «Сказочная страна»");
-        add("Административное здание");
-        add("Оршанская детская школа искусств № 1");
-        add("Оршанская детская школа искусств № 2");
-        add("Оршанская детская школа искусств № 3");
-        add("Ореховская детская школа искусств");
-        add("Дом культуры железнодорожников");
-        add("3D кинотеатр");
-    }};
     private static final String SUBTITLE = "Музейный комплекс истории и культуры Оршанщины";
     private static final String NBSP_SYMBOL = "\\u00a0";
 
@@ -46,7 +25,6 @@ public class AnnouncementParser implements DocumentParser<ArrayList<Announcement
         }
 
         document.select("script,.hidden,style, a, img").remove();
-//        document.select(":containsOwn(\u00a0)").remove();
         Element content = document.getElementById("content");
 
         for (Element element : content.select("*")) {

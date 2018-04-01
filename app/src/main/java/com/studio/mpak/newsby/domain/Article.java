@@ -1,15 +1,12 @@
 package com.studio.mpak.newsby.domain;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Andrei Kuzniatsou
  */
-public class Article implements Parcelable {
+public class Article {
 
     private int id;
     private List<String> categories = new ArrayList<>();
@@ -26,27 +23,6 @@ public class Article implements Parcelable {
     private Article prev = null;
     private Article next = null;
     private List<Article> related = new ArrayList<>();
-
-    public Article() {
-    }
-
-    private Article(Parcel parcel) {
-        this();
-        id = parcel.readInt();
-        parcel.readStringList(categories);
-        title = parcel.readString();
-        articleUrl = parcel.readString();
-        imageUrl = parcel.readString();
-        date = parcel.readString();
-        views = parcel.readString();
-        author = parcel.readString();
-        comments = parcel.readString();
-        content = parcel.readString();
-        description = parcel.readString();
-        prev = parcel.readParcelable(Article.class.getClassLoader());
-        next = parcel.readParcelable(Article.class.getClassLoader());
-        parcel.readList(related, Article.class.getClassLoader());
-    }
 
     public String getViews() {
         return views;
@@ -164,37 +140,22 @@ public class Article implements Parcelable {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public String toString() {
+        return "Article{" + "id=" + id +
+                ", categories=" + categories +
+                ", title='" + title + '\'' +
+                ", articleUrl='" + articleUrl + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", date='" + date + '\'' +
+                ", views='" + views + '\'' +
+                ", author='" + author + '\'' +
+                ", comments='" + comments + '\'' +
+                ", content='" + content + '\'' +
+                ", description='" + description + '\'' +
+                ", prev=" + prev +
+                ", next=" + next +
+                ", related=" + related +
+                '}';
     }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeInt(id);
-        parcel.writeStringList(categories);
-        parcel.writeString(title);
-        parcel.writeString(articleUrl);
-        parcel.writeString(imageUrl);
-        parcel.writeString(date);
-        parcel.writeString(views);
-        parcel.writeString(author);
-        parcel.writeString(comments);
-        parcel.writeString(content);
-        parcel.writeString(description);
-        parcel.writeParcelable(next, flags);
-        parcel.writeParcelable(prev, flags);
-        parcel.writeTypedList(related);
-    }
-
-    public static final Creator<Article> CREATOR = new
-            Creator<Article>() {
-                public Article createFromParcel(Parcel in) {
-                    return new Article(in);
-                }
-
-                public Article[] newArray(int size) {
-                    return new Article[size];
-                }
-            };
 
 }

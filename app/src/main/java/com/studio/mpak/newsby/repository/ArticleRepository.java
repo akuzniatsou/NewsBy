@@ -1,6 +1,6 @@
 package com.studio.mpak.newsby.repository;
 
-import static com.studio.mpak.newsby.util.AppUtil.*;
+import static com.studio.mpak.newsby.util.AppUtil.join;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,12 +10,10 @@ import android.database.sqlite.SQLiteDatabase;
 import com.studio.mpak.newsby.data.DatabaseHelper;
 import com.studio.mpak.newsby.data.article.ArticleContract.ArticleEntry;
 import com.studio.mpak.newsby.data.category.CategoryEnum;
-import com.studio.mpak.newsby.data.relation.ArticleCategoryContract;
 import com.studio.mpak.newsby.data.relation.ArticleCategoryContract.ArticleCategoryEntry;
 import com.studio.mpak.newsby.domain.Article;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**

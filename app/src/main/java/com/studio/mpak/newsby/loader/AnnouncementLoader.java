@@ -4,19 +4,20 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import com.studio.mpak.newsby.domain.Announcement;
+import com.studio.mpak.newsby.domain.Response;
 import com.studio.mpak.newsby.parser.DocumentParser;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import com.studio.mpak.newsby.util.AppUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class AnnouncementLoader extends AsyncTaskLoader<ArrayList<Announcement<String>>> {
 
     private static final String LOG_TAG = AnnouncementLoader.class.getSimpleName();
     private static final String URL = "http://www.orshanka.by/?page_id=22085";
     private final DocumentParser<ArrayList<Announcement<String>>> parser;
-
 
     public AnnouncementLoader(Context context, DocumentParser<ArrayList<Announcement<String>>> parser) {
         super(context);
@@ -25,13 +26,14 @@ public class AnnouncementLoader extends AsyncTaskLoader<ArrayList<Announcement<S
 
     @Override
     public ArrayList<Announcement<String>> loadInBackground() {
-        Document document = null;
-        try {
-            document = Jsoup.connect(URL).timeout(10000).get();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error with creating URL", e);
+        ArrayList<Announcement<String>> result = new ArrayList<>(0);
+        Response response = AppUtil.get(URL);
+        if (response.getStatus().isError()) {
+            Log.e(LOG_TAG, "Error while loading announcement, " + response.getStatus().getReasonPhrase());
+        } else {
+            result = parser.parse(response.getData());
         }
-        return parser.parse(document);
+        return result;
     }
 
     @Override

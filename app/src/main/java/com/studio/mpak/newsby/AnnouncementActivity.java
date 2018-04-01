@@ -18,6 +18,9 @@ import com.studio.mpak.newsby.parser.AnnouncementParser;
 
 import java.util.ArrayList;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class AnnouncementActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<ArrayList<Announcement<String>>>,
         SearchView.OnQueryTextListener, SearchView.OnCloseListener{

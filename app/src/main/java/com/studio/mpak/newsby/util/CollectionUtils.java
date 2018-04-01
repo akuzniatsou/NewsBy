@@ -6,6 +6,9 @@ import com.studio.mpak.newsby.domain.Vacancy;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public final class CollectionUtils {
 
     public static ArrayList<Announcement<Vacancy>> deepCopy(ArrayList<Announcement<Vacancy>> source) {

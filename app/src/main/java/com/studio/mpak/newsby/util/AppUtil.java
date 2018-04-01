@@ -1,7 +1,14 @@
 package com.studio.mpak.newsby.util;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
-import com.studio.mpak.newsby.adapter.ArticleAdapter;
+import com.studio.mpak.newsby.domain.HttpStatus;
+import com.studio.mpak.newsby.domain.Response;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -12,6 +19,8 @@ import java.net.URLEncoder;
 public final class AppUtil {
 
     private static final String LOG_TAG = AppUtil.class.getSimpleName();
+    private static final String USER_AGENT = "Mozilla";
+    private static final int TIMEOUT = 10000;
 
     public static String getEncodedUrl(String url) {
         String link = null;
@@ -28,5 +37,28 @@ public final class AppUtil {
 
     public static String join(String table, String column) {
         return table + '.' + column;
+    }
+
+    public static boolean isConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static Response get(String url) {
+        Document document = null;
+        HttpStatus httpStatus;
+        try {
+            document = Jsoup.connect(url).userAgent(USER_AGENT).timeout(TIMEOUT).get();
+            httpStatus = HttpStatus.OK;
+        } catch (HttpStatusException e) {
+            httpStatus = HttpStatus.valueOf(e.getStatusCode());
+        } catch (Exception e) {
+            httpStatus = HttpStatus.UNKNOWN_ERROR;
+        }
+        return new Response(httpStatus, document);
     }
 }

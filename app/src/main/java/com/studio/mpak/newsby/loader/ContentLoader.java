@@ -45,7 +45,7 @@ public class ContentLoader extends AsyncTaskLoader<ArrayList<Article>> {
             for (int i = 0; i < duration; i++) {
                 String url = DEFAULT_URL + getPeriod(currentDate);
                 try {
-                    document = Jsoup.connect(url).timeout(10000).get();
+                    document = Jsoup.connect(url).userAgent("Mozilla").timeout(10000).get();
                 } catch (HttpStatusException e) {
                     if (HTTP_STATUS == e.getStatusCode()) {
                         Log.e(LOG_TAG, "There are no new articles on this month", e);
@@ -59,7 +59,7 @@ public class ContentLoader extends AsyncTaskLoader<ArrayList<Article>> {
                 articles.addAll(parser.parse(document));
                 Integer pageSize = parsePageSize(document);
                 for (int page = 2; page < pageSize + 1; page++) {
-                    document = Jsoup.connect(url + "&paged=" + page).timeout(10000).get();
+                    document = Jsoup.connect(url + "&paged=" + page).userAgent("Mozilla").timeout(10000).get();
                     articles.addAll(parser.parse(document));
                 }
                 currentDate = currentDate.minusMonths(1);

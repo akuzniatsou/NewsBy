@@ -14,11 +14,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.studio.mpak.newsby.fragments.CategoryCursorPagerAdapter;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class MainActivity extends AppCompatActivity {
 
-    CategoryCursorPagerAdapter fAdapter;
-    DrawerLayout drawer;
-    Toolbar toolbar;
+    private CategoryCursorPagerAdapter fAdapter;
+    private DrawerLayout drawer;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

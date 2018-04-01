@@ -6,6 +6,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+/**
+ * @author Andrei Kuzniatsou
+ */
 public class ArticleParser implements DocumentParser<Article> {
 
     // Сжатие картинок под экран

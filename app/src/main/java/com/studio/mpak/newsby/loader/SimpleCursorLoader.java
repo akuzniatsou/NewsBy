@@ -17,11 +17,9 @@ public abstract class SimpleCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public abstract Cursor loadInBackground();
 
-    /* Runs on the UI thread */
     @Override
     public void deliverResult(Cursor cursor) {
         if (isReset()) {
-            // An async query came in while the loader is stopped
             if (cursor != null) {
                 cursor.close();
             }
@@ -49,12 +47,8 @@ public abstract class SimpleCursorLoader extends AsyncTaskLoader<Cursor> {
         }
     }
 
-    /**
-     * Must be called from the UI thread
-     */
     @Override
     protected void onStopLoading() {
-        // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
 
@@ -68,8 +62,6 @@ public abstract class SimpleCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         super.onReset();
-
-        // Ensure the loader is stopped
         onStopLoading();
 
         if (mCursor != null && !mCursor.isClosed()) {
