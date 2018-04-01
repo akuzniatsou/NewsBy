@@ -7,6 +7,7 @@ import com.studio.mpak.newsby.domain.Article;
 import com.studio.mpak.newsby.parser.DocumentParser;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -23,6 +24,7 @@ public class ContentLoader extends AsyncTaskLoader<ArrayList<Article>> {
     private static final String LOG_TAG = ContentLoader.class.getSimpleName();
     private static final String DEFAULT_URL = "http://www.orshanka.by/?m=";
     private static final int DEFAULT_DURATION = 2;
+    private static final int HTTP_STATUS = 404;
 
     private final DocumentParser<ArrayList<Article>> parser;
     private DateTime lastUpdateDate;
@@ -35,14 +37,25 @@ public class ContentLoader extends AsyncTaskLoader<ArrayList<Article>> {
 
     @Override
     public ArrayList<Article> loadInBackground() {
-        Document document;
+        Document document = null;
         ArrayList<Article> articles = new ArrayList<>();
         try {
             DateTime currentDate = new DateTime();
             int duration = getDurationOrDefault(lastUpdateDate, currentDate);
             for (int i = 0; i < duration; i++) {
                 String url = DEFAULT_URL + getPeriod(currentDate);
-                document = Jsoup.connect(url).timeout(10000).get();
+                try {
+                    document = Jsoup.connect(url).timeout(10000).get();
+                } catch (HttpStatusException e) {
+                    if (HTTP_STATUS == e.getStatusCode()) {
+                        Log.e(LOG_TAG, "There are no new articles on this month", e);
+                        if (duration > 1) {
+                            duration++;
+                            currentDate = currentDate.minusMonths(1);
+                        }
+                        continue;
+                    }
+                }
                 articles.addAll(parser.parse(document));
                 Integer pageSize = parsePageSize(document);
                 for (int page = 2; page < pageSize + 1; page++) {
@@ -63,10 +76,18 @@ public class ContentLoader extends AsyncTaskLoader<ArrayList<Article>> {
     }
 
     private Integer parsePageSize(Document document) {
-        Elements select = document.select(".pages");
-        String text = select.text();
-        String pages = text.substring(text.lastIndexOf(" ") + 1, text.length());
-        return Integer.parseInt(pages);
+        int pagesNumber = 1;
+        try {
+            Elements select = document.select(".pages");
+            if (select.size() > 0) {
+                String text = select.text();
+                String pages = text.substring(text.lastIndexOf(" ") + 1, text.length());
+                pagesNumber = Integer.parseInt(pages);
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Exception occurred during parsing page size", e);
+        }
+        return pagesNumber;
     }
 
     private String getPeriod(DateTime dt) {
