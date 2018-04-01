@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:padding="5dp"
+              android:paddingLeft="25dp"
+              android:paddingStart="25dp">
+
+    <TextView
+            android:id="@+id/position"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:textColor="@color/subElement"
+            android:textSize="13sp"
+            android:text="@string/test_text"
+
+            android:layout_marginStart="12dp"/>
+
+    <TextView
+            android:id="@+id/salary"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:textColor="@color/colorEconomic"
+            android:textSize="20sp"
+            android:text="@string/test_salary"
+
+            android:layout_marginStart="12dp"/>
+
+</LinearLayout>
