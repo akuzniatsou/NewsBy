@@ -34,7 +34,6 @@ public class ArticleParser implements DocumentParser<Article> {
             article.getCategories().add(href.text());
         }
 
-        String textShorted = content.select(".entry-content").text().substring(0,100) + "...";
         String title = content.select(".entry-title").text();
         article.setTitle(title);
         String articleUrl = content.select(".posted-on").select("a").attr("href");
@@ -46,7 +45,6 @@ public class ArticleParser implements DocumentParser<Article> {
         article.setId(articleId);
 
         String imageUrl = content.select("img").attr("src");
-//        String imageUrl = document.select("meta[property=og:image]").attr("content");
 
         article.setImageUrl(imageUrl);
 
@@ -69,8 +67,6 @@ public class ArticleParser implements DocumentParser<Article> {
                 "</html>";
 
         article.setContent(htmlMain);
-
-
 
         Element navigation = document.getElementsByClass("default-wp-page").first();
         if (null == navigation) {

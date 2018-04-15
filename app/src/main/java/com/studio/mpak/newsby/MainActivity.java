@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.studio.mpak.newsby.fragments.CategoryCursorPagerAdapter;
+import com.studio.mpak.newsby.service.BackgroundService;
 
 /**
  * @author Andrei Kuzniatsou
@@ -83,15 +84,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
     }
-
 
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            stopService(new Intent(this, BackgroundService.class));
             super.onBackPressed();
         }
     }
@@ -102,4 +102,18 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.toolbar_right_menu, menu);
         return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_download:
+                startService(new Intent(this, BackgroundService.class));
+                return true;
+            case R.id.cancel_download:
+                stopService(new Intent(this, BackgroundService.class));
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

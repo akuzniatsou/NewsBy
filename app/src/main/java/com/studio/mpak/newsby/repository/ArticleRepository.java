@@ -5,6 +5,7 @@ import static com.studio.mpak.newsby.util.AppUtil.join;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import com.studio.mpak.newsby.data.DatabaseHelper;
@@ -66,12 +67,14 @@ public class ArticleRepository implements IRepository<Article>{
     }
 
     public void update(Article article) {
-        ContentValues values = new ContentValues();
-        values.put(ArticleEntry.COLUMN_CONTENT, article.getContent());
-        values.put(ArticleEntry.COLUMN_PREV_ID, article.getPrev().getId());
-        values.put(ArticleEntry.COLUMN_NEXT_ID, article.getNext().getId());
-        database.update(ArticleEntry.TABLE_NAME, values, ArticleEntry._ID + "= ?",
-                new String[]{String.valueOf(article.getId())});
+        if (database.isOpen()) {
+            ContentValues values = new ContentValues();
+            values.put(ArticleEntry.COLUMN_CONTENT, article.getContent());
+            values.put(ArticleEntry.COLUMN_PREV_ID, article.getPrev().getId());
+            values.put(ArticleEntry.COLUMN_NEXT_ID, article.getNext().getId());
+            database.update(ArticleEntry.TABLE_NAME, values, ArticleEntry._ID + "= ?",
+                    new String[]{String.valueOf(article.getId())});
+        }
     }
 
     public Article last() {
@@ -153,6 +156,36 @@ public class ArticleRepository implements IRepository<Article>{
                 cursor.close();
         }
         return articles;
+    }
+
+    public Article findArticleWithoutContent() {
+        Article article = null;
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(String.format(
+                    "select * from %s where %s is null",
+                    ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CONTENT),
+                    null);
+            if (cursor.moveToFirst()) {
+                do {
+                    article = new Article();
+                    article.setId(cursor.getInt(cursor.getColumnIndex(ArticleEntry._ID)));
+                    article.setArticleUrl(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_URL)));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return article;
+    }
+
+    public long countArticleWithoutContent() {
+        long numEntries = 0;
+        if (database.isOpen()) {
+            numEntries = DatabaseUtils.queryNumEntries(database, ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CONTENT + " is null");
+        }
+        return numEntries;
     }
 
     public Cursor getArticles(Integer categoryId) {

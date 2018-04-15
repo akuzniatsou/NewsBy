@@ -134,6 +134,7 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
         private LoaderManager loaderManager;
         private ArticleCursorFragment fragment;
         private final ThreadLocal<FragmentActivity> activity = new ThreadLocal<>();
+        private ArticleRepository repository;
 
         UpdateContentAsyncTask(int totalItemsCount, ArticleCursorAdapter mCursorAdapter,
                                LoaderManager loaderManager, ArticleCursorFragment fragment,
@@ -155,12 +156,12 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
             if (articles == null) {
                 return;
             }
-            ArticleRepository articleRepository = new ArticleRepository(activity.get().getApplicationContext());
-            articleRepository.open();
+            repository = new ArticleRepository(activity.get().getApplicationContext());
+            repository.open();
             for (Article article : articles) {
-                articleRepository.insert(article);
+                repository.insert(article);
             }
-            articleRepository.close();
+            repository.close();
             loaderManager.restartLoader(ARTICLE_CURSOR_LOADER_ID, null, fragment);
             mCursorAdapter.notifyDataSetChanged();
 
@@ -169,6 +170,8 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
         @Override
         protected void onCancelled() {
             super.onCancelled();
+            repository.close();
+
         }
     }
 

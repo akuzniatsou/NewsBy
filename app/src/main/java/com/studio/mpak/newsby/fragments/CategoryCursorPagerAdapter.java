@@ -64,4 +64,5 @@ public class CategoryCursorPagerAdapter extends FragmentPagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         super.destroyItem(container, position, object);
     }
+
 }
