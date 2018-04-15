@@ -12,8 +12,11 @@ import com.studio.mpak.newsby.data.article.ArticleContract.ArticleEntry;
 import com.studio.mpak.newsby.data.category.CategoryEnum;
 import com.studio.mpak.newsby.data.relation.ArticleCategoryContract.ArticleCategoryEntry;
 import com.studio.mpak.newsby.domain.Article;
+import org.jsoup.helper.StringUtil;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,12 +65,23 @@ public class ArticleRepository implements IRepository<Article>{
         }
     }
 
+    public void update(Article article) {
+        ContentValues values = new ContentValues();
+        values.put(ArticleEntry.COLUMN_CONTENT, article.getContent());
+        values.put(ArticleEntry.COLUMN_PREV_ID, article.getPrev().getId());
+        values.put(ArticleEntry.COLUMN_NEXT_ID, article.getNext().getId());
+        database.update(ArticleEntry.TABLE_NAME, values, ArticleEntry._ID + "= ?",
+                new String[]{String.valueOf(article.getId())});
+    }
+
     public Article last() {
         Article article = null;
         Cursor cursor = null;
         try {
-            cursor = database.rawQuery("select * from " + ArticleEntry.TABLE_NAME
-                    + " order by " + ArticleEntry.COLUMN_CREATED_DATE + " asc limit 1", null);
+            cursor = database.rawQuery(String.format(
+                    "select * from %s order by %s asc limit 1",
+                    ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CREATED_DATE),
+                    null);
             if (cursor.moveToFirst()) {
                 do {
                     article = new Article();
@@ -82,10 +96,72 @@ public class ArticleRepository implements IRepository<Article>{
         return article;
     }
 
-    public Cursor getArticles(int categoryId) {
-        return database.rawQuery("select * from " + ArticleEntry.TABLE_NAME
-                        + " inner join " + ArticleCategoryEntry.TABLE_NAME + " on "
-                        + ARTICLE_ID + " = " + ARTICLE_ID_JOIN + " where " + CATEGORY + " = ?",
+    public Article findArticle(Integer articeId) {
+        Article article = null;
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(String.format(
+                    "select * from %s where %s = ?",
+                    ArticleEntry.TABLE_NAME, ArticleEntry._ID),
+                    new String[]{String.valueOf(articeId)});
+            if (cursor.moveToFirst()) {
+                do {
+                    article = new Article();
+                    article.setId(cursor.getInt(cursor.getColumnIndex(ArticleEntry._ID)));
+                    article.setDate(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_PUB_DATE)));
+                    article.setArticleUrl(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_URL)));
+                    article.setTitle(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_TITLE)));
+                    article.setContent(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_CONTENT)));
+                    Integer prev_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_PREV_ID));
+                    Integer next_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_NEXT_ID));
+                    if (null != prev_id) article.setPrev(new Article(prev_id));
+                    if (null != next_id) article.setNext(new Article(next_id));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return article;
+    }
+
+    public List<Article> findArticles(List<Integer> articeIds) {
+        List<Article> articles = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(String.format(
+                    "select * from %s where %s in (%s)",
+                    ArticleEntry.TABLE_NAME, ArticleEntry._ID, StringUtil.join(articeIds,",")),
+                    null);
+            if (cursor.moveToFirst()) {
+                do {
+                    Article article = new Article();
+                    article.setId(cursor.getInt(cursor.getColumnIndex(ArticleEntry._ID)));
+                    article.setDate(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_PUB_DATE)));
+                    article.setArticleUrl(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_URL)));
+                    article.setContent(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_CONTENT)));
+                    int prev_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_PREV_ID));
+                    int next_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_NEXT_ID));
+                    article.setPrev(new Article(prev_id));
+                    article.setPrev(new Article(next_id));
+                    articles.add(article);
+
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return articles;
+    }
+
+    public Cursor getArticles(Integer categoryId) {
+        if (null == categoryId) {
+            return null;
+        }
+        return database.rawQuery(String.format(
+                "select * from %s inner join %s on %s = %s where %s = ?",
+                ArticleEntry.TABLE_NAME, ArticleCategoryEntry.TABLE_NAME, ARTICLE_ID, ARTICLE_ID_JOIN, CATEGORY),
                 new String[]{String.valueOf(categoryId)});
     }
 }

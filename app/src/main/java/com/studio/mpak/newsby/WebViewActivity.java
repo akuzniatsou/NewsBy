@@ -41,7 +41,6 @@ public class WebViewActivity extends Activity implements LoaderManager.LoaderCal
     private TextView tvPrev;
     private TextView tvNext;
 
-
     @SuppressLint({"ClickableViewAccessibility", "SetJavaScriptEnabled"})
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +53,7 @@ public class WebViewActivity extends Activity implements LoaderManager.LoaderCal
         mAdapter = new ArticleAdapter(this, new ArrayList<Article>());
         tvPrev = findViewById(R.id.related_nav_prev);
         tvNext = findViewById(R.id.related_nav_next);
+
 
 
         webView.getSettings().setJavaScriptEnabled(true);
@@ -98,6 +98,7 @@ public class WebViewActivity extends Activity implements LoaderManager.LoaderCal
                 item.setOnClickListener(new NavigateButtonClickListener(relatedItem));
                 llRelated.addView(item);
             }
+
             webView.loadDataWithBaseURL(article.getArticleUrl(), article.getContent(),"text/html", "UTF-8", null);
         } else {
             webView.loadUrl("about:blank");

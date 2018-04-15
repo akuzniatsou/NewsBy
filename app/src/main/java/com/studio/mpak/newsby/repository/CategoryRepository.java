@@ -36,8 +36,9 @@ public class CategoryRepository {
         List<Category> categories = new ArrayList<>();
         Cursor cursor = null;
         try {
-            cursor = database.rawQuery("select * from " + CategoryEntry.TABLE_NAME
-                    + " order by " + CategoryEntry.COLUMN_ORDER + " asc", null);
+            cursor = database.rawQuery(String.format(
+                    "select * from %s order by %s asc",
+                    CategoryEntry.TABLE_NAME, CategoryEntry.COLUMN_ORDER), null);
             if (cursor.moveToFirst()) {
                 do {
                     Category category = new Category();

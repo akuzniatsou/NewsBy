@@ -21,13 +21,10 @@ public class ArticleContract {
                     + ArticleEntry.COLUMN_SCR_IMAGE + " TEXT NOT NULL, "
                     + ArticleEntry.COLUMN_CONTENT + " TEXT, "
                     + ArticleEntry.COLUMN_COMMENT_COUNT + " TEXT, "
-                    + ArticleEntry.COLUMN_CATEGORY + " TEXT, "
                     + ArticleEntry.COLUMN_PREV_ID + " TEXT, "
                     + ArticleEntry.COLUMN_NEXT_ID + " TEXT, "
                     + ArticleEntry.COLUMN_PUB_DATE + " TEXT NOT NULL, "
-                    + ArticleEntry.COLUMN_CREATED_DATE + " DATETIME, " +
-                    "CONSTRAINT prev_article_fk FOREIGN KEY (prev_article_id) REFERENCES articles(_id)," +
-                    "CONSTRAINT next_article_fk FOREIGN KEY (next_article_id) REFERENCES articles(_id));";
+                    + ArticleEntry.COLUMN_CREATED_DATE + " DATETIME);";
 
     public static abstract class ArticleEntry implements BaseColumns {
 

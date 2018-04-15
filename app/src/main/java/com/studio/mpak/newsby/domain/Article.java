@@ -24,6 +24,13 @@ public class Article {
     private Article next = null;
     private List<Article> related = new ArrayList<>();
 
+    public Article() {
+    }
+
+    public Article(int id) {
+        this.id = id;
+    }
+
     public String getViews() {
         return views;
     }

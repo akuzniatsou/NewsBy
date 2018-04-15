@@ -39,14 +39,12 @@ public class ArticleParser implements DocumentParser<Article> {
         article.setTitle(title);
         String articleUrl = content.select(".posted-on").select("a").attr("href");
         article.setArticleUrl(articleUrl);
-        String articleId = articleUrl.substring(articleUrl.lastIndexOf("=") + 1);
-        try {
-            article.setId(Integer.valueOf(articleId));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get article id of " + articleUrl);
+        Integer articleId = getArticleId(articleUrl);
+        if (null == articleId) {
             return null;
         }
+        article.setId(articleId);
+
         String imageUrl = content.select("img").attr("src");
 //        String imageUrl = document.select("meta[property=og:image]").attr("content");
 
@@ -78,6 +76,7 @@ public class ArticleParser implements DocumentParser<Article> {
         if (null == navigation) {
             return article;
         }
+        //TODO {akuzniatsou} Refactor
         for (Node node : navigation.childNodes()) {
             if ("previous".equals(node.attr("class"))) {
                 String href = ((Element) node).select("a[href]").attr("href");
@@ -86,6 +85,10 @@ public class ArticleParser implements DocumentParser<Article> {
                 prevArticle.setArticleUrl(href);
                 prevArticle.setTitle(cleanup(text));
                 article.setPrev(prevArticle);
+                Integer id = getArticleId(href);
+                if (null != id) {
+                    prevArticle.setId(id);
+                }
             }
             if ("next".equals(node.attr("class"))) {
                 String href = ((Element) node).select("a[href]").attr("href");
@@ -94,6 +97,10 @@ public class ArticleParser implements DocumentParser<Article> {
                 nextArticle.setArticleUrl(href);
                 nextArticle.setTitle(cleanup(text));
                 article.setNext(nextArticle);
+                Integer id = getArticleId(href);
+                if (null != id) {
+                    nextArticle.setId(id);
+                }
             }
         }
 
@@ -120,6 +127,18 @@ public class ArticleParser implements DocumentParser<Article> {
             article.getRelated().add(relatedArticle);
         }
         return article;
+    }
+
+    private Integer getArticleId(String articleUrl) {
+        Integer id = null;
+        try {
+            String articleId = articleUrl.substring(articleUrl.lastIndexOf("=") + 1);
+            id = Integer.valueOf(articleId);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            System.out.println("Failed to get article id of " + articleUrl);
+        }
+        return id;
     }
 
     private String cleanup(String text) {
