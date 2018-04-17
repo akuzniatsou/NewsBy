@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 <item android:id="@+id/menu_download"
-      android:title="Скачать новости"/>
-    <!--android:icon="@drawable/if_go_download"-->
-    <!--app:showAsAction="always" />-->
+      android:title="Оффлайн"
+    android:icon="@drawable/if_go_download"
+    app:showAsAction="always" />
 
-    <item android:id="@+id/cancel_download"
-          android:title="Отмена"/>
+    <!--<item android:id="@+id/cancel_download"-->
+          <!--android:title="Отмена"/>-->
 </menu>

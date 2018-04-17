@@ -60,4 +60,10 @@
     <string name="test_salary">9999,99</string>
     <string name="vacancy_title">Вакансии</string>
 
+    <string-array name="update_period">
+        <item>1 Месяц</item>
+        <!--//TODO: {akuzniatsou} adjust repository to fetch article by range -->
+        <!--<item>2 Месяца</item>-->
+    </string-array>
+
 </resources>

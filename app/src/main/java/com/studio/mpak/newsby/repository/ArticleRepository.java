@@ -9,15 +9,14 @@ import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import com.studio.mpak.newsby.data.DatabaseHelper;
+import com.studio.mpak.newsby.data.article.ArticleContract;
 import com.studio.mpak.newsby.data.article.ArticleContract.ArticleEntry;
 import com.studio.mpak.newsby.data.category.CategoryEnum;
 import com.studio.mpak.newsby.data.relation.ArticleCategoryContract.ArticleCategoryEntry;
 import com.studio.mpak.newsby.domain.Article;
-import org.jsoup.helper.StringUtil;
+import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -109,16 +108,7 @@ public class ArticleRepository implements IRepository<Article>{
                     new String[]{String.valueOf(articeId)});
             if (cursor.moveToFirst()) {
                 do {
-                    article = new Article();
-                    article.setId(cursor.getInt(cursor.getColumnIndex(ArticleEntry._ID)));
-                    article.setDate(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_PUB_DATE)));
-                    article.setArticleUrl(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_URL)));
-                    article.setTitle(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_TITLE)));
-                    article.setContent(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_CONTENT)));
-                    Integer prev_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_PREV_ID));
-                    Integer next_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_NEXT_ID));
-                    if (null != prev_id) article.setPrev(new Article(prev_id));
-                    if (null != next_id) article.setNext(new Article(next_id));
+                    article = getArticle(cursor);
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -128,43 +118,19 @@ public class ArticleRepository implements IRepository<Article>{
         return article;
     }
 
-    public List<Article> findArticles(List<Integer> articeIds) {
-        List<Article> articles = new ArrayList<>();
-        Cursor cursor = null;
-        try {
-            cursor = database.rawQuery(String.format(
-                    "select * from %s where %s in (%s)",
-                    ArticleEntry.TABLE_NAME, ArticleEntry._ID, StringUtil.join(articeIds,",")),
-                    null);
-            if (cursor.moveToFirst()) {
-                do {
-                    Article article = new Article();
-                    article.setId(cursor.getInt(cursor.getColumnIndex(ArticleEntry._ID)));
-                    article.setDate(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_PUB_DATE)));
-                    article.setArticleUrl(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_URL)));
-                    article.setContent(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_CONTENT)));
-                    int prev_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_PREV_ID));
-                    int next_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_NEXT_ID));
-                    article.setPrev(new Article(prev_id));
-                    article.setPrev(new Article(next_id));
-                    articles.add(article);
-
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            if (cursor != null)
-                cursor.close();
+    public Article findArticleWithoutContent(int period) {
+        if (!database.isOpen()) {
+            return null;
         }
-        return articles;
-    }
-
-    public Article findArticleWithoutContent() {
+        LocalDate date = LocalDate.now().minusMonths(period);
+        int month = date.getMonthOfYear() ;
+        int year = date.getYear();
         Article article = null;
         Cursor cursor = null;
         try {
             cursor = database.rawQuery(String.format(
-                    "select * from %s where %s is null",
-                    ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CONTENT),
+                    "select * from %s where %s is null and date LIKE '___%02d.%d'",
+                    ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CONTENT, month, year),
                     null);
             if (cursor.moveToFirst()) {
                 do {
@@ -180,12 +146,31 @@ public class ArticleRepository implements IRepository<Article>{
         return article;
     }
 
-    public long countArticleWithoutContent() {
+    public long countArticleWithoutContent(int period) {
         long numEntries = 0;
         if (database.isOpen()) {
-            numEntries = DatabaseUtils.queryNumEntries(database, ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CONTENT + " is null");
+            LocalDate date = LocalDate.now().minusMonths(period);
+            int month = date.getMonthOfYear() ;
+            int year = date.getYear();
+            numEntries = DatabaseUtils.queryNumEntries(database, ArticleEntry.TABLE_NAME,
+                    String.format("%s is null and date LIKE '___%02d.%d'", ArticleEntry.COLUMN_CONTENT, month, year));
         }
         return numEntries;
+    }
+
+    private Article getArticle(Cursor cursor) {
+        Article article;
+        article = new Article();
+        article.setId(cursor.getInt(cursor.getColumnIndex(ArticleEntry._ID)));
+        article.setDate(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_PUB_DATE)));
+        article.setArticleUrl(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_URL)));
+        article.setTitle(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_TITLE)));
+        article.setContent(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_CONTENT)));
+        Integer prev_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_PREV_ID));
+        Integer next_id = cursor.getInt(cursor.getColumnIndex(ArticleEntry.COLUMN_NEXT_ID));
+        article.setPrev(new Article(prev_id));
+        article.setNext(new Article(next_id));
+        return article;
     }
 
     public Cursor getArticles(Integer categoryId) {

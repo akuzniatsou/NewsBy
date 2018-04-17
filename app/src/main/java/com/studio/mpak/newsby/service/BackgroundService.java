@@ -15,8 +15,14 @@ import com.studio.mpak.newsby.util.AppUtil;
 
 public class BackgroundService extends IntentService {
 
+
+    public static final int STATUS_RUNNING = 0;
+    public static final int STATUS_FINISHED = 1;
+    public static final int STATUS_ERROR = 2;
+
     private static final String LOG_TAG = BackgroundService.class.getSimpleName();
     private ArticleRepository repository;
+    private int period;
 
     public BackgroundService() {
         super(BackgroundService.class.getSimpleName());
@@ -29,12 +35,19 @@ public class BackgroundService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        final ResultReceiver receiver = intent.getParcelableExtra("receiver");
+        period = intent.getIntExtra("period", 1);
+        Bundle bundle = new Bundle();
         repository = new ArticleRepository(this);
         repository.open();
-        long countArticleWithoutContent;
-        while ((countArticleWithoutContent = repository.countArticleWithoutContent()) > 0) {
-            Log.i(LOG_TAG, format("%d: articles to update", countArticleWithoutContent));
+        long countToUpdate = repository.countArticleWithoutContent(period);
+        long initialCount = countToUpdate;
+        while (countToUpdate > 0) {
+            Log.i(LOG_TAG, format("%d: articles to update", countToUpdate));
             updateData();
+            bundle.putLong(Intent.EXTRA_TEXT, (long) (100 - Math.ceil(countToUpdate * 100 / initialCount)));
+            receiver.send(STATUS_RUNNING, bundle);
+            countToUpdate = repository.countArticleWithoutContent(period);
             sleep(3000);
         }
     }
@@ -45,7 +58,10 @@ public class BackgroundService extends IntentService {
     }
 
     private void updateData() {
-        Article articleWithoutContent = repository.findArticleWithoutContent();
+        Article articleWithoutContent = repository.findArticleWithoutContent(period);
+        if (null == articleWithoutContent) {
+            return;
+        }
         Response response = AppUtil.get(articleWithoutContent.getArticleUrl());
         if (response.getStatus().isError()) {
             Log.e(LOG_TAG, "Error while loading article, " + articleWithoutContent.getArticleUrl() +

@@ -19,11 +19,8 @@ import com.studio.mpak.newsby.util.AppUtil;
  */
 public class ArticleCursorAdapter extends CursorAdapter {
 
-    private final Context context;
-
     public ArticleCursorAdapter(Context context, Cursor c) {
         super(context, c, 0 /* flags */);
-        this.context = context;
     }
 
     @Override

@@ -107,10 +107,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_download:
-                startService(new Intent(this, BackgroundService.class));
+                startActivity(new Intent(MainActivity.this, DownloadActivity.class));
                 return true;
-            case R.id.cancel_download:
-                stopService(new Intent(this, BackgroundService.class));
             default:
                 return super.onOptionsItemSelected(item);
         }
