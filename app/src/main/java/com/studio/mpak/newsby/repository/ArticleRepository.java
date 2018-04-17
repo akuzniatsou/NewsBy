@@ -9,12 +9,10 @@ import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import com.studio.mpak.newsby.data.DatabaseHelper;
-import com.studio.mpak.newsby.data.article.ArticleContract;
 import com.studio.mpak.newsby.data.article.ArticleContract.ArticleEntry;
 import com.studio.mpak.newsby.data.category.CategoryEnum;
 import com.studio.mpak.newsby.data.relation.ArticleCategoryContract.ArticleCategoryEntry;
 import com.studio.mpak.newsby.domain.Article;
-import org.joda.time.LocalDate;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +34,9 @@ public class ArticleRepository implements IRepository<Article>{
     }
 
     public void open() throws SQLException {
-        database = dbHelper.getWritableDatabase();
+        if (database == null) {
+            database = dbHelper.getWritableDatabase();
+        }
     }
 
     public void close() {
@@ -65,15 +65,13 @@ public class ArticleRepository implements IRepository<Article>{
         }
     }
 
-    public void update(Article article) {
-        if (database.isOpen()) {
+    public void updateContent(Article article) {
             ContentValues values = new ContentValues();
             values.put(ArticleEntry.COLUMN_CONTENT, article.getContent());
             values.put(ArticleEntry.COLUMN_PREV_ID, article.getPrev().getId());
             values.put(ArticleEntry.COLUMN_NEXT_ID, article.getNext().getId());
             database.update(ArticleEntry.TABLE_NAME, values, ArticleEntry._ID + "= ?",
                     new String[]{String.valueOf(article.getId())});
-        }
     }
 
     public Article last() {
@@ -98,14 +96,12 @@ public class ArticleRepository implements IRepository<Article>{
         return article;
     }
 
-    public Article findArticle(Integer articeId) {
+    public Article findArticle(Integer articleId) {
         Article article = null;
         Cursor cursor = null;
         try {
-            cursor = database.rawQuery(String.format(
-                    "select * from %s where %s = ?",
-                    ArticleEntry.TABLE_NAME, ArticleEntry._ID),
-                    new String[]{String.valueOf(articeId)});
+            cursor = database.rawQuery(String.format("select * from %s where %s = ?",
+                    ArticleEntry.TABLE_NAME, ArticleEntry._ID), new String[]{String.valueOf(articleId)});
             if (cursor.moveToFirst()) {
                 do {
                     article = getArticle(cursor);
@@ -118,20 +114,12 @@ public class ArticleRepository implements IRepository<Article>{
         return article;
     }
 
-    public Article findArticleWithoutContent(int period) {
-        if (!database.isOpen()) {
-            return null;
-        }
-        LocalDate date = LocalDate.now().minusMonths(period);
-        int month = date.getMonthOfYear() ;
-        int year = date.getYear();
+    public Article findArticleWithoutContent(String period) {
         Article article = null;
         Cursor cursor = null;
         try {
-            cursor = database.rawQuery(String.format(
-                    "select * from %s where %s is null and date LIKE '___%02d.%d'",
-                    ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CONTENT, month, year),
-                    null);
+            cursor = database.rawQuery(String.format("select * from %s where %s is null and date LIKE '___%s'",
+                    ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CONTENT, period),null);
             if (cursor.moveToFirst()) {
                 do {
                     article = new Article();
@@ -146,16 +134,9 @@ public class ArticleRepository implements IRepository<Article>{
         return article;
     }
 
-    public long countArticleWithoutContent(int period) {
-        long numEntries = 0;
-        if (database.isOpen()) {
-            LocalDate date = LocalDate.now().minusMonths(period);
-            int month = date.getMonthOfYear() ;
-            int year = date.getYear();
-            numEntries = DatabaseUtils.queryNumEntries(database, ArticleEntry.TABLE_NAME,
-                    String.format("%s is null and date LIKE '___%02d.%d'", ArticleEntry.COLUMN_CONTENT, month, year));
-        }
-        return numEntries;
+    public long countArticleWithoutContent(String period) {
+        String whereCondition = String.format("%s is null and date LIKE '___%s'", ArticleEntry.COLUMN_CONTENT, period);
+        return DatabaseUtils.queryNumEntries(database, ArticleEntry.TABLE_NAME, whereCondition);
     }
 
     private Article getArticle(Cursor cursor) {
@@ -181,5 +162,9 @@ public class ArticleRepository implements IRepository<Article>{
                 "select * from %s inner join %s on %s = %s where %s = ?",
                 ArticleEntry.TABLE_NAME, ArticleCategoryEntry.TABLE_NAME, ARTICLE_ID, ARTICLE_ID_JOIN, CATEGORY),
                 new String[]{String.valueOf(categoryId)});
+    }
+
+    public boolean isOpen() {
+        return database.isOpen();
     }
 }

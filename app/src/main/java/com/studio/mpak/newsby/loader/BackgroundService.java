@@ -1,4 +1,4 @@
-package com.studio.mpak.newsby.service;
+package com.studio.mpak.newsby.loader;
 
 import static java.lang.String.format;
 
@@ -10,18 +10,19 @@ import android.util.Log;
 import com.studio.mpak.newsby.domain.Article;
 import com.studio.mpak.newsby.domain.Response;
 import com.studio.mpak.newsby.parser.ArticleParser;
-import com.studio.mpak.newsby.repository.ArticleRepository;
+import com.studio.mpak.newsby.service.ArticleService;
 import com.studio.mpak.newsby.util.AppUtil;
 
 public class BackgroundService extends IntentService {
-
 
     public static final int STATUS_RUNNING = 0;
     public static final int STATUS_FINISHED = 1;
     public static final int STATUS_ERROR = 2;
 
     private static final String LOG_TAG = BackgroundService.class.getSimpleName();
-    private ArticleRepository repository;
+    private ArticleService articleService;
+    private ResultReceiver receiver;
+
     private int period;
 
     public BackgroundService() {
@@ -35,30 +36,32 @@ public class BackgroundService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        final ResultReceiver receiver = intent.getParcelableExtra("receiver");
+        articleService = new ArticleService(this);
+
+        receiver = intent.getParcelableExtra("receiver");
         period = intent.getIntExtra("period", 1);
         Bundle bundle = new Bundle();
-        repository = new ArticleRepository(this);
-        repository.open();
-        long countToUpdate = repository.countArticleWithoutContent(period);
+
+        long countToUpdate = articleService.countArticleWithoutContentForPeriod(period);
         long initialCount = countToUpdate;
         while (countToUpdate > 0) {
             Log.i(LOG_TAG, format("%d: articles to update", countToUpdate));
             updateData();
             bundle.putLong(Intent.EXTRA_TEXT, (long) (100 - Math.ceil(countToUpdate * 100 / initialCount)));
             receiver.send(STATUS_RUNNING, bundle);
-            countToUpdate = repository.countArticleWithoutContent(period);
+            countToUpdate = articleService.countArticleWithoutContentForPeriod(period);
             sleep(3000);
         }
+//        receiver.send(STATUS_FINISHED, bundle);
     }
 
     @Override
     public void onDestroy() {
-        repository.close();
+        articleService.close();
     }
 
     private void updateData() {
-        Article articleWithoutContent = repository.findArticleWithoutContent(period);
+        Article articleWithoutContent = articleService.findArticleWithoutContent(period);
         if (null == articleWithoutContent) {
             return;
         }
@@ -69,7 +72,7 @@ public class BackgroundService extends IntentService {
         } else {
             Article article = new ArticleParser().parse(response.getData());
             Log.e(LOG_TAG, "Successfully updated:  " + article.getArticleUrl());
-            repository.update(article);
+            articleService.update(article);
         }
     }
 

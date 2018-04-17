@@ -2,7 +2,6 @@ package com.studio.mpak.newsby.loader;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.database.Cursor;
 import android.util.Log;
 import com.studio.mpak.newsby.domain.Article;
 import com.studio.mpak.newsby.domain.Response;
@@ -40,7 +39,7 @@ public class ArticleLoader extends AsyncTaskLoader<Article> {
                 Log.e(LOG_TAG, "Error while loading article, " + response.getStatus().getReasonPhrase());
             } else {
                 article = parser.parse(response.getData());
-                repository.update(article);
+                repository.updateContent(article);
             }
         } else {
             Article prev = repository.findArticle(article.getPrev().getId());

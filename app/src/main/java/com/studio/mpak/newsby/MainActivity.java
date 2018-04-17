@@ -15,7 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.studio.mpak.newsby.fragments.CategoryCursorPagerAdapter;
-import com.studio.mpak.newsby.service.BackgroundService;
+import com.studio.mpak.newsby.loader.BackgroundService;
 
 /**
  * @author Andrei Kuzniatsou

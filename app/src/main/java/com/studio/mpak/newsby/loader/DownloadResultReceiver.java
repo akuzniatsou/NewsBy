@@ -1,4 +1,4 @@
-package com.studio.mpak.newsby.service;
+package com.studio.mpak.newsby.loader;
 
 import android.os.Bundle;
 import android.os.Handler;

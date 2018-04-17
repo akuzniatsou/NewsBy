@@ -17,8 +17,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
-import com.studio.mpak.newsby.service.BackgroundService;
-import com.studio.mpak.newsby.service.DownloadResultReceiver;
+import com.studio.mpak.newsby.loader.BackgroundService;
+import com.studio.mpak.newsby.loader.DownloadResultReceiver;
 import com.studio.mpak.newsby.util.AppUtil;
 
 /**
