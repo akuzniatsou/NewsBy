@@ -13,6 +13,9 @@ import com.studio.mpak.newsby.data.article.ArticleContract.ArticleEntry;
 import com.studio.mpak.newsby.data.category.CategoryEnum;
 import com.studio.mpak.newsby.data.relation.ArticleCategoryContract.ArticleCategoryEntry;
 import com.studio.mpak.newsby.domain.Article;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -50,6 +53,9 @@ public class ArticleRepository implements IRepository<Article>{
         values.put(ArticleEntry.COLUMN_URL, article.getArticleUrl());
         values.put(ArticleEntry.COLUMN_SCR_IMAGE, article.getImageUrl());
         values.put(ArticleEntry.COLUMN_PUB_DATE, article.getDate());
+        LocalDate localDate = LocalDate.parse(article.getDate(), DateTimeFormat.forPattern("dd.MM.yyyy"));
+        String publishedDate = String.valueOf(localDate.toString(DateTimeFormat.forPattern("yyyy-MM-dd")));
+        values.put(ArticleEntry.COLUMN_DATE, publishedDate);
         values.put(ArticleEntry.COLUMN_CREATED_DATE, System.currentTimeMillis());
         database.insert(ArticleEntry.TABLE_NAME, null, values);
 

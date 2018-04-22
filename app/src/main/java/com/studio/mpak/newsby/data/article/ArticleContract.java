@@ -24,6 +24,7 @@ public class ArticleContract {
                     + ArticleEntry.COLUMN_PREV_ID + " TEXT, "
                     + ArticleEntry.COLUMN_NEXT_ID + " TEXT, "
                     + ArticleEntry.COLUMN_PUB_DATE + " TEXT NOT NULL, "
+                    + ArticleEntry.COLUMN_DATE + " TEXT NOT NULL, "
                     + ArticleEntry.COLUMN_CREATED_DATE + " DATETIME);";
 
     public static abstract class ArticleEntry implements BaseColumns {
@@ -40,6 +41,7 @@ public class ArticleContract {
         public final static String COLUMN_URL = "url";
         public final static String COLUMN_SCR_IMAGE = "img";
         public final static String COLUMN_PUB_DATE = "date";
+        public final static String COLUMN_DATE = "publishedOn";
         public final static String COLUMN_CONTENT = "content";
         public final static String COLUMN_DESCRIPTION = "description";
         public final static String COLUMN_CATEGORY = "category_id";
