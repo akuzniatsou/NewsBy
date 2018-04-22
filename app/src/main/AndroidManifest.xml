@@ -32,6 +32,10 @@
         <activity android:name=".DownloadActivity" android:label="Оффлайн режим">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
+        <activity android:name=".ContactsActivity" android:label="Контакты">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
+        </activity>
+
         <service android:name="com.studio.mpak.newsby.loader.BackgroundService" android:exported="false" />
     </application>
 

@@ -39,17 +39,17 @@ public class DownloadActivity extends AppCompatActivity implements DownloadResul
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.download_activity);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mReceiver = new DownloadResultReceiver(new Handler());
         mReceiver.setReceiver(this);
 
-        Spinner spinner = findViewById(R.id.peroid_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.update_period, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
-        spinner.setSelection(DEFAULT_SELECTION);
+//        Spinner spinner = findViewById(R.id.peroid_spinner);
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//                R.array.update_period, android.R.layout.simple_spinner_item);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(adapter);
+//        spinner.setOnItemSelectedListener(this);
+//        spinner.setSelection(DEFAULT_SELECTION);
 
         intent = new Intent(Intent.ACTION_SYNC, null, this, BackgroundService.class);
         intent.putExtra("receiver", mReceiver);
@@ -105,8 +105,9 @@ public class DownloadActivity extends AppCompatActivity implements DownloadResul
                 progressBar.setProgress((int) progress);
                 break;
             case BackgroundService.STATUS_FINISHED:
-                progressBar.setProgress(100);
-                Toast.makeText(this, "Complete", Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.INVISIBLE);
+                downloadButton.setText("Готово");
+//                Toast.makeText(this, "Complete", Toast.LENGTH_LONG).show();
                 break;
             case BackgroundService.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);

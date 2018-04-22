@@ -13,7 +13,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
-
     <string name="settings_content_actual">Актуально</string>
     <string name="settings_content_main">Главное</string>
     <string name="settings_content_society">Общество</string>
@@ -30,40 +29,43 @@
     <string name="settings_content_anniversary">Юбилей города</string>
 
 
-
-
-
-
-
-
-
-
-
     <string name="settings_menu_item">Settings</string>
-    <string name="settings_title">Настройки</string>
-
-    <string name="settings_min_magnitude_label">Minimum Magnitude</string>
-    <string name="settings_min_magnitude_key" translatable="false">min_magnitude</string>
-    <string name="settings_min_magnitude_default" translatable="false">6</string>
-
-    <string name="settings_order_by_label">Order By</string>
-    <string name="settings_order_by_key" translatable="false">order_by</string>
-    <string name="settings_order_by_default" translatable="false">@string/settings_order_by_magnitude_value</string>
-
-    <string name="settings_order_by_magnitude_label">Magnitude</string>
-    <string name="settings_order_by_magnitude_value" translatable="false">magnitude</string>
 
     <string name="settings_order_by_most_recent_label">Most Recent</string>
     <string name="settings_order_by_most_recent_value" translatable="false">time</string>
+
+    <!-- Left navigation menu -->
     <string name="announcement_title">Афиша</string>
-    <string name="test_text">Госконтроль выявил нарушения порядка представления данных государственной статистической отчетности</string>
-    <string name="test_salary">9999,99</string>
     <string name="vacancy_title">Вакансии</string>
+    <string name="contacts_title">Контакты</string>
+    <string name="sections_title">Выбрать разделы</string>
+    <string name="settings_title">Настройки</string>
+
+    <!-- Contacts -->
+    <string name="contacts_organization">Учреждение Редакция районной газеты Аршанская газета и программы районного радиовещания</string>
+    <string name="contacts_editor_caption">Главный редактор:</string>
+    <string name="contacts_editor_name">Турок Анастасия Александровна</string>
+    <string name="contacts_address_caption">Адрес:</string>
+    <string name="contacts_address_city">211030 г.Орша, Витебская область</string>
+    <string name="contacts_address_street">ул. Александра Герцена, 4а</string>
+    <string name="contacts_schedule_caption">Время работы:</string>
+    <string name="contacts_schedule_work">Пн–Пт 8.00–17.00</string>
+    <string name="contacts_schedule_break">(перерыв с 13.00–14.00)</string>
+    <string name="contacts_phone_hotline">Горячая линия: 8 (0216) 51–25–75</string>
+    <string name="contacts_phone_editor">Главный редактор: 8 (0216) 51–25–00</string>
+    <string name="contacts_email_caption">Электронная почта:</string>
+    <string name="contacts_email_address">ag41@mail.ru</string>
+    <string name="contacts_vk_link">Группа ВКонтакте:</string>
+    <string name="contacts_ok_link">Группа Одноклассники:</string>
 
     <string-array name="update_period">
         <item>1 Месяц</item>
         <!--//TODO: {akuzniatsou} adjust repository to fetch article by range -->
         <!--<item>2 Месяца</item>-->
     </string-array>
+
+    <!-- Test values -->
+    <string name="test_text">Госконтроль выявил нарушения порядка представления данных государственной статистической отчетности</string>
+    <string name="test_salary">9999,99</string>
 
 </resources>

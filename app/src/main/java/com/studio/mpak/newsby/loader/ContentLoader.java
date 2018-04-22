@@ -79,7 +79,7 @@ public class ContentLoader extends AsyncTaskLoader<ArrayList<Article>> {
         int pagesNumber = 1;
         try {
             Elements select = document.select(".pages");
-            if (select.size() > 0) {
+            if (null != select && select.size() > 0) {
                 String text = select.text();
                 String pages = text.substring(text.lastIndexOf(" ") + 1, text.length());
                 pagesNumber = Integer.parseInt(pages);

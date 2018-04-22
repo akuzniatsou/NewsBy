@@ -52,7 +52,7 @@ public class BackgroundService extends IntentService {
             countToUpdate = articleService.countArticleWithoutContentForPeriod(period);
             sleep(3000);
         }
-//        receiver.send(STATUS_FINISHED, bundle);
+        receiver.send(STATUS_FINISHED, bundle);
     }
 
     @Override

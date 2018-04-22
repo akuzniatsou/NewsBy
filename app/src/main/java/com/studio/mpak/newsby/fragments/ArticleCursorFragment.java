@@ -170,8 +170,6 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            repository.close();
-
         }
     }
 
