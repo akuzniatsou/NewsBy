@@ -67,5 +67,7 @@
     <!-- Test values -->
     <string name="test_text">Госконтроль выявил нарушения порядка представления данных государственной статистической отчетности</string>
     <string name="test_salary">9999,99</string>
+    <string name="contacts">Контакты</string>
+    <string name="offline_mode">Оффлайн режим</string>
 
 </resources>
