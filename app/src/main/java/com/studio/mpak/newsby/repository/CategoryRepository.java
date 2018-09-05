@@ -20,7 +20,7 @@ public class CategoryRepository {
     private DatabaseHelper dbHelper;
 
     public CategoryRepository(Context context) {
-        this.dbHelper = new DatabaseHelper(context);
+        this.dbHelper = DatabaseHelper.getInstance(context);
 
     }
 

@@ -15,7 +15,6 @@ import com.studio.mpak.newsby.data.relation.ArticleCategoryContract.ArticleCateg
 import com.studio.mpak.newsby.domain.Article;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +31,7 @@ public class ArticleRepository implements IRepository<Article>{
     private DatabaseHelper dbHelper;
 
     public ArticleRepository(Context context) {
-        this.dbHelper = new DatabaseHelper(context);
+        this.dbHelper = DatabaseHelper.getInstance(context);
 
     }
 
@@ -43,7 +42,9 @@ public class ArticleRepository implements IRepository<Article>{
     }
 
     public void close() {
-        dbHelper.close();
+        if (dbHelper != null) {
+            dbHelper.close();
+        }
     }
 
     public void insert(Article article) {
@@ -80,26 +81,29 @@ public class ArticleRepository implements IRepository<Article>{
                     new String[]{String.valueOf(article.getId())});
     }
 
-    public Article last() {
-        Article article = null;
+    public String getLastUpdatedDate() {
+        String lastUpdatedDate = null;
         Cursor cursor = null;
         try {
-            cursor = database.rawQuery(String.format(
-                    "select * from %s order by %s asc limit 1",
-                    ArticleEntry.TABLE_NAME, ArticleEntry.COLUMN_CREATED_DATE),
-                    null);
+            cursor = database.query(
+                ArticleEntry.TABLE_NAME,
+                new String[]{ArticleEntry.COLUMN_PUB_DATE},
+                null,
+                null,
+                null,
+                null,
+                ArticleEntry.COLUMN_CREATED_DATE + " ASC",
+                "1");
             if (cursor.moveToFirst()) {
                 do {
-                    article = new Article();
-                    article.setId(cursor.getInt(cursor.getColumnIndex(ArticleEntry._ID)));
-                    article.setDate(cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_PUB_DATE)));
+                    lastUpdatedDate = cursor.getString(cursor.getColumnIndex(ArticleEntry.COLUMN_PUB_DATE));
                 } while (cursor.moveToNext());
             }
         } finally {
             if (cursor != null)
                 cursor.close();
         }
-        return article;
+        return lastUpdatedDate;
     }
 
     public Article findArticle(Integer articleId) {

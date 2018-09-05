@@ -69,5 +69,7 @@
     <string name="test_salary">9999,99</string>
     <string name="contacts">Контакты</string>
     <string name="offline_mode">Оффлайн режим</string>
+    <string name="vk_link">https://vk.com/arshanka</string>
+    <string name="ok_link">https://ok.ru/arshanskay</string>
 
 </resources>

@@ -4,15 +4,19 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import com.studio.mpak.newsby.domain.Article;
+import com.studio.mpak.newsby.domain.HttpStatus;
+import com.studio.mpak.newsby.domain.Response;
+import com.studio.mpak.newsby.parser.ArticleListParser;
 import com.studio.mpak.newsby.parser.DocumentParser;
+import com.studio.mpak.newsby.repository.ArticleRepository;
+import com.studio.mpak.newsby.util.AppUtil;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
+import org.joda.time.format.DateTimeFormat;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -24,48 +28,64 @@ public class ContentLoader extends AsyncTaskLoader<ArrayList<Article>> {
     private static final String LOG_TAG = ContentLoader.class.getSimpleName();
     private static final String DEFAULT_URL = "http://www.orshanka.by/?m=";
     private static final int DEFAULT_DURATION = 2;
-    private static final int HTTP_STATUS = 404;
 
-    private final DocumentParser<ArrayList<Article>> parser;
-    private DateTime lastUpdateDate;
+    private ArticleRepository repository;
 
-    public ContentLoader(DateTime lastUpdateDate, Context context, DocumentParser<ArrayList<Article>> parser) {
+    public ContentLoader(Context context) {
         super(context);
-        this.lastUpdateDate = lastUpdateDate;
-        this.parser = parser;
     }
 
     @Override
     public ArrayList<Article> loadInBackground() {
-        Document document = null;
+        DocumentParser<ArrayList<Article>> parser = new ArticleListParser();
+        repository = new ArticleRepository(getContext());
+        repository.open();
+
+        DateTime currentDate = new DateTime();
+
+        String last = repository.getLastUpdatedDate();
+        int duration;
+        if (null != last) {
+            DateTime lastUpdateDate = DateTime.parse(last, DateTimeFormat.forPattern("dd.MM.yyyy"));
+            duration = getDurationOrDefault(lastUpdateDate, currentDate);
+        } else {
+            duration = DEFAULT_DURATION;
+        }
+
         ArrayList<Article> articles = new ArrayList<>();
-        try {
-            DateTime currentDate = new DateTime();
-            int duration = getDurationOrDefault(lastUpdateDate, currentDate);
-            for (int i = 0; i < duration; i++) {
-                String url = DEFAULT_URL + getPeriod(currentDate);
-                try {
-                    document = Jsoup.connect(url).userAgent("Mozilla").timeout(10000).get();
-                } catch (HttpStatusException e) {
-                    if (HTTP_STATUS == e.getStatusCode()) {
-                        Log.e(LOG_TAG, "There are no new articles on this month", e);
-                        if (duration > 1) {
-                            duration++;
-                            currentDate = currentDate.minusMonths(1);
-                        }
-                        continue;
-                    }
+
+        for (int i = 0; i < duration; i++) {
+            String url = DEFAULT_URL + getPeriod(currentDate);
+
+            Response response = AppUtil.get(url);
+
+            if (HttpStatus.NOT_FOUND.equals(response.getStatus())) {
+                Log.e(LOG_TAG, "There are no new articles on this month");
+                if (duration > 1) {
+                    duration++;
+                    currentDate = currentDate.minusMonths(1);
                 }
-                articles.addAll(parser.parse(document));
-                Integer pageSize = parsePageSize(document);
-                for (int page = 2; page < pageSize + 1; page++) {
-                    document = Jsoup.connect(url + "&paged=" + page).userAgent("Mozilla").timeout(10000).get();
-                    articles.addAll(parser.parse(document));
-                }
-                currentDate = currentDate.minusMonths(1);
+                continue;
+            } else if (response.getStatus().isError()) {
+                Log.e(LOG_TAG, "Could not fetch articles, server error");
+                return articles;
             }
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error with creating URL", e);
+
+            articles.addAll(parser.parse(response.getData()));
+            Integer pageSize = parsePageSize(response.getData());
+            for (int page = 2; page < pageSize + 1; page++) {
+                response = AppUtil.get(url + "&paged=" + page);
+                if (response.getStatus().isSuccessful()) {
+                    articles.addAll(parser.parse(response.getData()));
+                } else {
+                    Log.e(LOG_TAG, "Could not fetch articles, server error");
+                }
+            }
+            currentDate = currentDate.minusMonths(1);
+        }
+
+        for (Article article : articles) {
+            repository.insert(article);
         }
         return articles;
     }
@@ -73,6 +93,14 @@ public class ContentLoader extends AsyncTaskLoader<ArrayList<Article>> {
     @Override
     protected void onStartLoading() {
         forceLoad();
+    }
+
+    @Override
+    protected void onAbandon() {
+        if (repository != null) {
+            repository.close();
+        }
+        super.onAbandon();
     }
 
     private Integer parsePageSize(Document document) {

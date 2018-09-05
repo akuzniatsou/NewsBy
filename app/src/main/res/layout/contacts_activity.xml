@@ -260,7 +260,7 @@
                     <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/contacts_vk_link"
+                            android:text="@string/vk_link"
                             android:textSize="16sp"/>
 
 
@@ -293,9 +293,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/contacts_ok_link"
-
                             android:textSize="16sp"/>
-
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ok_link"
+                            android:textSize="16sp"/>
 
                 </LinearLayout>
             </LinearLayout>

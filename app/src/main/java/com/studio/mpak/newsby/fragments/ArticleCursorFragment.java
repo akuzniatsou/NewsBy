@@ -117,14 +117,22 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        bar.setVisibility(View.GONE);
         mCursorAdapter.swapCursor(null);
         if (asyncTask != null) {
             asyncTask.cancel(true);
         }
     }
 
+
+
     @Override
     public void onPause() {
+        bar.setVisibility(View.GONE);
+        if (asyncTask != null) {
+            asyncTask.cancel(true);
+        }
+        mCursorAdapter.swapCursor(null);
         super.onPause();
     }
 
@@ -169,6 +177,9 @@ public class ArticleCursorFragment extends Fragment implements LoaderManager.Loa
 
         @Override
         protected void onCancelled() {
+            if (null != repository) {
+                repository.close();
+            }
             super.onCancelled();
         }
     }
